@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.google.android.material.color.DynamicColors
 import com.pilltracker.R
 
@@ -23,29 +21,12 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
-        // Drive toolbar from fragment lifecycle — fires after back stack is settled,
-        // handles both system back gesture and toolbar up button correctly.
-        supportFragmentManager.registerFragmentLifecycleCallbacks(
-            object : FragmentManager.FragmentLifecycleCallbacks() {
-                override fun onFragmentResumed(fm: FragmentManager, f: Fragment) = syncToolbar()
-            },
-            false,
-        )
-        syncToolbar()
-    }
-
-    private fun syncToolbar() {
-        val onRoot = supportFragmentManager.backStackEntryCount == 0
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(!onRoot)
-            title = getString(if (onRoot) R.string.app_name else R.string.settings_title)
+        // Refresh gear icon visibility once the back stack actually settles.
+        // Title and back arrow are owned by each fragment's onResume to avoid
+        // racing with Android 13+ predictive back animations.
+        supportFragmentManager.addOnBackStackChangedListener {
+            invalidateOptionsMenu()
         }
-        invalidateOptionsMenu()
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        supportFragmentManager.popBackStack()
-        return true
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -57,6 +38,11 @@ class MainActivity : AppCompatActivity() {
         menu.findItem(R.id.action_settings)?.isVisible =
             supportFragmentManager.backStackEntryCount == 0
         return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        supportFragmentManager.popBackStack()
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
