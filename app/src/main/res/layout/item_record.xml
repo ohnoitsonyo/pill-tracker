@@ -3,14 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp"
     android:gravity="center_vertical">
 
-    <View
+    <ImageView
         android:id="@+id/status_dot"
-        android:layout_width="12dp"
-        android:layout_height="12dp"
-        android:background="@drawable/pill_button_bg" />
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:src="@drawable/ic_pill"
+        android:rotation="60"
+        android:scaleType="centerInside" />
 
     <TextView
         android:id="@+id/date_text"
@@ -18,11 +21,13 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_marginStart="12dp"
-        android:textSize="16sp" />
+        style="?attr/textAppearanceBodyLarge" />
 
     <TextView
         android:id="@+id/status_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="14sp" />
+        style="?attr/textAppearanceLabelLarge"
+        android:textColor="?attr/colorOnSurfaceVariant" />
+
 </LinearLayout>

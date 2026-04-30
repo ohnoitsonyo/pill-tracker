@@ -5,7 +5,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.google.android.material.tabs.TabLayout
 import com.pilltracker.R
 import com.pilltracker.data.MedicationDatabase
 import com.pilltracker.data.MedicationRecord
@@ -29,23 +28,29 @@ class MainActivityTest {
     }
 
     @Test
-    fun historyTab_isFirstTab() {
+    fun historyFragment_isShownOnLaunch() {
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
             scenario.onActivity { activity ->
-                val tabs = activity.findViewById<TabLayout>(R.id.tab_layout)
-                assertEquals(2, tabs.tabCount)
-                assertEquals("History", tabs.getTabAt(0)?.text)
-                assertEquals("Settings", tabs.getTabAt(1)?.text)
+                val fragment = activity.supportFragmentManager.fragments
+                    .filterIsInstance<HistoryFragment>().firstOrNull()
+                assertNotNull(fragment)
             }
         }
     }
 
     @Test
-    fun historyList_isDisplayed() {
+    fun settingsFragment_isShownAfterGearTap() {
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
             scenario.onActivity { activity ->
+                activity.onOptionsItemSelected(
+                    activity.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
+                        .menu.findItem(R.id.action_settings) ?: return@onActivity
+                )
+            }
+            Thread.sleep(200)
+            scenario.onActivity { activity ->
                 val fragment = activity.supportFragmentManager.fragments
-                    .filterIsInstance<HistoryFragment>().firstOrNull()
+                    .filterIsInstance<SettingsFragment>().firstOrNull()
                 assertNotNull(fragment)
             }
         }

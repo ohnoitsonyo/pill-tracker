@@ -1,25 +1,60 @@
 package com.pilltracker.ui
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.color.DynamicColors
 import com.pilltracker.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        DynamicColors.applyToActivityIfAvailable(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val pager = findViewById<ViewPager2>(R.id.view_pager)
-        pager.adapter = HistoryPagerAdapter(this)
+        setSupportActionBar(findViewById(R.id.toolbar))
 
-        TabLayoutMediator(findViewById<TabLayout>(R.id.tab_layout), pager) { tab, position ->
-            tab.text = when (position) {
-                0 -> "History"
-                else -> "Settings"
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, HistoryFragment())
+                .commit()
+        }
+
+        supportFragmentManager.addOnBackStackChangedListener {
+            val onRoot = supportFragmentManager.backStackEntryCount == 0
+            supportActionBar?.apply {
+                setDisplayHomeAsUpEnabled(!onRoot)
+                title = getString(if (onRoot) R.string.app_name else R.string.settings_title)
             }
-        }.attach()
+            invalidateOptionsMenu()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        menu.findItem(R.id.action_settings)?.isVisible =
+            supportFragmentManager.backStackEntryCount == 0
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_settings -> {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, SettingsFragment())
+                .addToBackStack(null)
+                .commit()
+            true
+        }
+        android.R.id.home -> {
+            supportFragmentManager.popBackStack()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 }

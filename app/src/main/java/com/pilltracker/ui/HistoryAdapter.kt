@@ -1,8 +1,10 @@
 package com.pilltracker.ui
 
+import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.pilltracker.R
@@ -28,7 +30,7 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
     override fun getItemCount() = records.size
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val dot: View = view.findViewById(R.id.status_dot)
+        private val dot: ImageView = view.findViewById(R.id.status_dot)
         private val dateText: TextView = view.findViewById(R.id.date_text)
         private val statusText: TextView = view.findViewById(R.id.status_text)
         private val formatter = DateTimeFormatter.ofPattern("EEE, MMM d")
@@ -36,10 +38,10 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
         fun bind(record: MedicationRecord) {
             dateText.text = LocalDate.parse(record.date).format(formatter)
             if (record.taken) {
-                dot.setBackgroundColor(0xFF4CAF50.toInt())
+                dot.setColorFilter(0xFF4CAF50.toInt(), PorterDuff.Mode.SRC_IN)
                 statusText.text = itemView.context.getString(R.string.status_taken)
             } else {
-                dot.setBackgroundColor(0xFF9E9E9E.toInt())
+                dot.setColorFilter(0xFF9E9E9E.toInt(), PorterDuff.Mode.SRC_IN)
                 statusText.text = itemView.context.getString(R.string.status_not_taken)
             }
         }
