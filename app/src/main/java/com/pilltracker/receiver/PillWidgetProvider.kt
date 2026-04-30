@@ -9,6 +9,7 @@ import android.widget.RemoteViews
 import com.pilltracker.R
 import com.pilltracker.data.MedicationDatabase
 import com.pilltracker.data.MedicationRecord
+import com.pilltracker.util.AlarmScheduler
 import com.pilltracker.util.PillPrefs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,6 +17,14 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class PillWidgetProvider : AppWidgetProvider() {
+
+    override fun onEnabled(context: Context) {
+        val prefs = PillPrefs(context)
+        if (prefs.lastResetDate.isEmpty()) {
+            prefs.lastResetDate = LocalDate.now().toString()
+        }
+        AlarmScheduler.scheduleNextMidnight(context)
+    }
 
     override fun onUpdate(
         context: Context,
