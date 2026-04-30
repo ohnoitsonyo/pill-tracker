@@ -5,12 +5,14 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.google.android.material.tabs.TabLayout
 import com.pilltracker.R
 import com.pilltracker.data.MedicationDatabase
 import com.pilltracker.data.MedicationRecord
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,11 +29,24 @@ class MainActivityTest {
     }
 
     @Test
+    fun historyTab_isFirstTab() {
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                val tabs = activity.findViewById<TabLayout>(R.id.tab_layout)
+                assertEquals(2, tabs.tabCount)
+                assertEquals("History", tabs.getTabAt(0)?.text)
+                assertEquals("Settings", tabs.getTabAt(1)?.text)
+            }
+        }
+    }
+
+    @Test
     fun historyList_isDisplayed() {
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
             scenario.onActivity { activity ->
-                val list = activity.findViewById<RecyclerView>(R.id.history_list)
-                assertEquals(RecyclerView.VISIBLE, list.visibility)
+                val fragment = activity.supportFragmentManager.fragments
+                    .filterIsInstance<HistoryFragment>().firstOrNull()
+                assertNotNull(fragment)
             }
         }
     }
@@ -46,8 +61,10 @@ class MainActivityTest {
         ActivityScenario.launch(MainActivity::class.java).use { scenario ->
             Thread.sleep(500)
             scenario.onActivity { activity ->
-                val list = activity.findViewById<RecyclerView>(R.id.history_list)
-                assertEquals(2, list.adapter?.itemCount)
+                val fragment = activity.supportFragmentManager.fragments
+                    .filterIsInstance<HistoryFragment>().firstOrNull()
+                val list = fragment?.view?.findViewById<RecyclerView>(R.id.history_list)
+                assertEquals(2, list?.adapter?.itemCount)
             }
         }
     }
