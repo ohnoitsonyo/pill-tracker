@@ -4,7 +4,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.appbar.MaterialToolbar
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.google.android.material.color.DynamicColors
 import com.pilltracker.R
 
@@ -22,14 +23,29 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
-        supportFragmentManager.addOnBackStackChangedListener {
-            val onRoot = supportFragmentManager.backStackEntryCount == 0
-            supportActionBar?.apply {
-                setDisplayHomeAsUpEnabled(!onRoot)
-                title = getString(if (onRoot) R.string.app_name else R.string.settings_title)
-            }
-            invalidateOptionsMenu()
+        // Drive toolbar from fragment lifecycle — fires after back stack is settled,
+        // handles both system back gesture and toolbar up button correctly.
+        supportFragmentManager.registerFragmentLifecycleCallbacks(
+            object : FragmentManager.FragmentLifecycleCallbacks() {
+                override fun onFragmentResumed(fm: FragmentManager, f: Fragment) = syncToolbar()
+            },
+            false,
+        )
+        syncToolbar()
+    }
+
+    private fun syncToolbar() {
+        val onRoot = supportFragmentManager.backStackEntryCount == 0
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(!onRoot)
+            title = getString(if (onRoot) R.string.app_name else R.string.settings_title)
         }
+        invalidateOptionsMenu()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        supportFragmentManager.popBackStack()
+        return true
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -49,10 +65,6 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.fragment_container, SettingsFragment())
                 .addToBackStack(null)
                 .commit()
-            true
-        }
-        android.R.id.home -> {
-            supportFragmentManager.popBackStack()
             true
         }
         else -> super.onOptionsItemSelected(item)
