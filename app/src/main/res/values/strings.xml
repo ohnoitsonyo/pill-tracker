@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pill Tracker</string>
+    <string name="pill_button_description">Toggle medication taken</string>
+    <string name="status_taken">Taken</string>
+    <string name="status_not_taken">Not taken</string>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Left half of capsule -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10,18 L24,18 L24,30 L10,30 A6,6 0 0 1 10,18 Z" />
+    <!-- Right half of capsule (slightly transparent to create two-tone effect) -->
+    <path
+        android:fillColor="#CCFFFFFF"
+        android:pathData="M24,18 L38,18 A6,6 0 0 1 38,30 L24,30 Z" />
+</vector>
